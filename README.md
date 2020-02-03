@@ -28,5 +28,5 @@ class Root {
     @:get('/$name')
     public function hello(name = 'World')
         return 'Hello, $name!';
-}
+} 
 ```
