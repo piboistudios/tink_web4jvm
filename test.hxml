@@ -1,0 +1,16 @@
+-lib hxjava
+-D jvm
+-lib tink_core
+-lib tink_io
+-lib tink_http
+-lib tink_web
+-java-lib ./undertow/lib/jboss-logging-3.4.0.Final.jar
+-java-lib ./undertow/lib/xnio-api-3.3.8.Final.jar
+-java-lib ./undertow/lib/xnio-nio-3.3.8.Final.jar
+-java-lib ./undertow/undertow-core-2.0.29.Final.jar
+-java-lib ./undertow/undertow-servlet-2.0.29.Final.jar
+
+-cp src
+-main Test
+
+-java bin/java
