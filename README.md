@@ -1,4 +1,4 @@
-*tink_web4jvm
+# tink_web4jvm
 
 This is a proof of concept for tink_web running on Haxe's JVM target.
 
