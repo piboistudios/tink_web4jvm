@@ -8,16 +8,19 @@ import tink.io.*;
 import io.undertow.server.HttpServerExchange;
 
 using tink.CoreApi;
+
 class Runnable implements java.lang.Runnable {
 	var f:Void->Void;
+
 	public function new(f) {
 		this.f = f;
 	}
+
 	public function run() {
 		f();
-		
 	}
 }
+
 class TinkHttpHandler implements io.undertow.server.HttpHandler {
 	var handler:Handler;
 	var errorListener:SignalTrigger<tink.http.ContainerFailure>;
@@ -33,7 +36,7 @@ class TinkHttpHandler implements io.undertow.server.HttpHandler {
 		// return;
 		try {
 			var undertowHandler = UndertowContainer.toUndertowHandler(this.handler);
-			exchange.dispatch(io.undertow.util.SameThreadExecutor.INSTANCE, new Runnable( () -> {
+			exchange.dispatch(io.undertow.util.SameThreadExecutor.INSTANCE, new Runnable(() -> {
 				undertowHandler(exchange).handle(() -> {
 					trace("Done with exchange");
 					trace(exchange);
@@ -81,16 +84,24 @@ class UndertowContainer implements Container {
 	var port:Null<Int>;
 
 	static public function incomingRequestFromExchange(exchange:HttpServerExchange) {
-		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap(cast exchange.getRequestReceiver(), null, () -> {}));
-		return new IncomingRequest(exchange.getSourceAddress().toString(),
+		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap(cast exchange.getRequestReceiver(), null,
+			() -> trace('Undertow Exchange Done')));
+		var b = body(exchange);
+		trace("Converting exchange");
+		trace(exchange);
+		var req = new IncomingRequest(exchange.getSourceAddress().toString(),
 			new IncomingRequestHeader(cast exchange.getRequestMethod().toString(), exchange.getRequestURL(), exchange.getProtocol().toString(), [
 				for (header in exchange.getRequestHeaders())
 					new HeaderField(header.getHeaderName().toString(), [for (i in 0...header.size()) header.get(i)].join(', '))
-			]), body(exchange));
+			]), b);
+		trace('req: $req');
+		return req;
 	}
 
 	static public function toUndertowHandler(handler:Handler) {
 		return (exchange:HttpServerExchange) -> Future.async(cb -> handler.process(incomingRequestFromExchange(exchange)).handle(out -> {
+			// sys.io.File.saveContent("./request-callstack.out", haxe.CallStack.toString(haxe.CallStack.callStack()));
+			trace("Transferring response.");
 			var headers = new Map();
 			for (h in out.header) {
 				if (!headers.exists(h.name))

@@ -19,11 +19,10 @@ class WriteHandler implements java.lang.Runnable {
 
 	public function run() {
 		try {
-			trace("Writing data.");
 			var chunkData = chunk.toBytes().getData();
-			for(i in chunkData) {
-                this.buffer.push(i);
-            }
+			for (i in chunkData) {
+				this.buffer.push(i);
+			}
 			trigger(Success(true));
 		} catch (e:Dynamic) {
 			trigger(Failure(Error.withData("Error writing to stream", e)));
