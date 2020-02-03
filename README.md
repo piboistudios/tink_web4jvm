@@ -2,7 +2,7 @@
 
 This is a proof of concept for tink_web running on Haxe's JVM target.
 
-It utilizes the Java Undertow/XNIO libraries by JBOSS to create interfaces usable by tink_io and tink_http to create the: `tink.http.containers.UndertowContainer`:
+It utilizes the Java [Undertow](https://github.com/undertow-io/undertow)/[XNIO](https://github.com/xnio/xnio) libraries by JBOSS to create interfaces usable by tink_io and tink_http to create the: `tink.http.containers.UndertowContainer`:
 
 Creating an Undertow Container:
 ```haxe
