@@ -32,15 +32,15 @@ class Test {
 }
 
 class Root {
-    public function new() {}
+	public function new() {}
 
-    @:get('/')
-    @:get('/hello/$name')
-    public function hello(name = 'World')
-        return 'Hello, $name!';
-
-    @:post("/stream-to-disk")
-    public function stream_to_disk(body:tink.io.Source.RealSource) {
+    @:post("/payload") // want to parse an arbitrary data structure?
+    @:consumes("application/json") // you can register other mime-type parsers/serializers
+    public function payload(body:{name:String, age:Int, job:String}) {
+        return '${body.name} is a ${body.age} year old ${job}';
+    }
+    @:post("/stream-to-disk") // want to stream binary streams over the web? Go ahead!
+	public function stream_to_disk(body:tink.io.Source.RealSource) {
         var stdOutput = new haxe.io.BytesOutput();
         var stdSink = tink.io.Sink.ofOutput('std-output', stdOutput);
         body.pipeTo(stdSink).handle(() -> {
@@ -49,11 +49,25 @@ class Root {
         });
         return "Streaming request to disk. :) Enjoy your response while we continue processing in the background.";
     }
-    @:post("/buffer-to-disk")
+
+    @:post("/buffer-to-disk") // want to synchronously read the request? Try it!
     public function buffer_to_disk(body:haxe.io.Bytes) {
         var text = body.toString();
         sys.io.File.saveContent("./request-buffered.out", text);
         return "Data buffered and written to disk; this happened synchronously, so the data was written to disk before this response was sent";
     }
-} 
+    @:get("/long-running-response") // need to run a long-running task before you can respond? Don't wait!
+    public function long_running_response() {
+        return tink.core.Future.async(cb -> {
+            haxe.Timer.delay(() -> {
+                cb("This is the response after one second has elapsed.");
+            }, 1000);
+        });
+    }
+	@:get('/')
+	@:get('/hello/$name') // basics
+	public function hello(name = 'World')
+		return 'Hello, $name!';
+}
+
 ```
