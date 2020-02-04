@@ -31,9 +31,6 @@ class TinkHttpHandler implements io.undertow.server.HttpHandler {
 	}
 
 	public function handleRequest(exchange:HttpServerExchange) {
-		// exchange.getResponseHeaders().put(io.undertow.util.Headers.CONTENT_TYPE, "text/plain"); // Response Headers
-		// exchange.getResponseSender().send("Hello World");
-		// return;
 		try {
 			var undertowHandler = UndertowContainer.toUndertowHandler(this.handler);
 			exchange.dispatch(io.undertow.util.SameThreadExecutor.INSTANCE, new Runnable(() -> {
@@ -51,23 +48,6 @@ class TinkHttpHandler implements io.undertow.server.HttpHandler {
 	}
 }
 
-class IoCB implements io.undertow.io.IoCallback {
-	var cb:Outcome<Bool, Error>->Void;
-
-	public function new(cb:Outcome<Bool, Error>->Void) {
-		this.cb = cb;
-	}
-
-	public function onComplete(exchange:Dynamic, sender:Dynamic) {
-		cb(Success(true));
-	}
-
-	public function onException(exchange:Dynamic, sender:Dynamic, exception:Dynamic) {
-		exception.printStackTrace();
-		cb(Failure(Error.withData("Java exception", exception)));
-	}
-}
-
 class UndertowContainer implements Container {
 	public function new(host, port) {
 		this.host = host;
@@ -79,7 +59,7 @@ class UndertowContainer implements Container {
 
 	static public function incomingRequestFromExchange(exchange:HttpServerExchange) {
 		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap("incoming undertow request",
-			cast exchange.getRequestReceiver(), () -> trace('Undertow request Done')));
+			cast exchange.getRequestReceiver(), () -> trace('Undertow request done')));
 		var b = body(exchange);
 		var req = new IncomingRequest(exchange.getSourceAddress().toString(),
 			new IncomingRequestHeader(cast exchange.getRequestMethod().toString(), exchange.getRequestURL(), exchange.getProtocol().toString(), [
@@ -104,12 +84,8 @@ class UndertowContainer implements Container {
 					responseHeaders.add(new io.undertow.util.HttpString(name), val);
 				}
 			}
-			var sink = tink.io.java.UndertowSink.wrap(null);
-			out.body.pipeTo(sink).handle(() -> {
-				var dump = sink.dump();
-				trace('Sending dump: $dump');
-				exchange.getResponseSender().send(dump, new IoCB(cb));
-			});
+			var sink = tink.io.java.UndertowSink.wrap("async-sender", exchange.getResponseSender());
+			out.body.pipeTo(sink).handle(() -> {});
 		}));
 	}
 

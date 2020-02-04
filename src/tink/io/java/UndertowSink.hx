@@ -11,7 +11,7 @@ import tink.io.Sink;
 import tink.streams.Stream;
 
 class UndertowSink extends SinkBase<Error, Noise> {
-	var target:XnioByteBuffer;
+	var target:WrappedAsyncSender;
 
 	function new(target) {
 		this.target = target;
@@ -31,10 +31,7 @@ class UndertowSink extends SinkBase<Error, Noise> {
 		return ret.map(c -> c.toResult(Noise));
 	}
 
-	public function dump()
-		return target.dump();
-
-	static public function wrap(native) {
-		return new UndertowSink(new XnioByteBuffer(native));
+	static public function wrap(name, native) {
+		return new UndertowSink(new WrappedAsyncSender(name, native));
 	}
 }
