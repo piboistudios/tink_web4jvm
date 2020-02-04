@@ -40,7 +40,7 @@ class Root {
         return 'Hello, $name!';
 
     @:post("/stream-to-disk")
-	public function stream_to_disk(body:tink.io.Source.RealSource) {
+    public function stream_to_disk(body:tink.io.Source.RealSource) {
         var stdOutput = new haxe.io.BytesOutput();
         var stdSink = tink.io.Sink.ofOutput('std-output', stdOutput);
         body.pipeTo(stdSink).handle(() -> {
