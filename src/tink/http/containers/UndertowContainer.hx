@@ -38,8 +38,7 @@ class TinkHttpHandler implements io.undertow.server.HttpHandler {
 			var undertowHandler = UndertowContainer.toUndertowHandler(this.handler);
 			exchange.dispatch(io.undertow.util.SameThreadExecutor.INSTANCE, new Runnable(() -> {
 				undertowHandler(exchange).handle(() -> {
-					trace("Done with exchange");
-					trace(exchange);
+					exchange.endExchange();
 				});
 			}));
 		} catch (e:Dynamic) {
@@ -60,15 +59,10 @@ class IoCB implements io.undertow.io.IoCallback {
 	}
 
 	public function onComplete(exchange:Dynamic, sender:Dynamic) {
-		trace("Done.");
 		cb(Success(true));
 	}
 
 	public function onException(exchange:Dynamic, sender:Dynamic, exception:Dynamic) {
-		trace('Exception: ${({
-			message: exception.getMessage(),
-			stackTrace: exception.getStackTrace()
-		})}');
 		exception.printStackTrace();
 		cb(Failure(Error.withData("Java exception", exception)));
 	}
@@ -84,24 +78,20 @@ class UndertowContainer implements Container {
 	var port:Null<Int>;
 
 	static public function incomingRequestFromExchange(exchange:HttpServerExchange) {
-		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap(cast exchange.getRequestReceiver(), null,
-			() -> trace('Undertow Exchange Done')));
+		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap("incoming undertow request",
+			cast exchange.getRequestReceiver(), () -> trace('Undertow request Done')));
 		var b = body(exchange);
-		trace("Converting exchange");
-		trace(exchange);
 		var req = new IncomingRequest(exchange.getSourceAddress().toString(),
 			new IncomingRequestHeader(cast exchange.getRequestMethod().toString(), exchange.getRequestURL(), exchange.getProtocol().toString(), [
 				for (header in exchange.getRequestHeaders())
 					new HeaderField(header.getHeaderName().toString(), [for (i in 0...header.size()) header.get(i)].join(', '))
 			]), b);
-		trace('req: $req');
 		return req;
 	}
 
 	static public function toUndertowHandler(handler:Handler) {
 		return (exchange:HttpServerExchange) -> Future.async(cb -> handler.process(incomingRequestFromExchange(exchange)).handle(out -> {
 			// sys.io.File.saveContent("./request-callstack.out", haxe.CallStack.toString(haxe.CallStack.callStack()));
-			trace("Transferring response.");
 			var headers = new Map();
 			for (h in out.header) {
 				if (!headers.exists(h.name))
@@ -115,10 +105,9 @@ class UndertowContainer implements Container {
 				}
 			}
 			var sink = tink.io.java.UndertowSink.wrap(null);
-			trace("Sending");
 			out.body.pipeTo(sink).handle(() -> {
 				var dump = sink.dump();
-				trace('Flushing ${dump}');
+				trace('Sending dump: $dump');
 				exchange.getResponseSender().send(dump, new IoCB(cb));
 			});
 		}));

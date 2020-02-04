@@ -1,0 +1,13 @@
+src/tink/io/java/UndertowSource.hx:45: Creating source.
+src/tink/io/java/UndertowSource.hx:45: Creating source.
+src/tink/io/java/UndertowSource.hx:48: Callback: Link({
+	"name": "test"
+},tink.io.java.UndertowSource@fcd355)
+src/tink/io/java/UndertowSource.hx:48: Callback: Link({
+	"name": "test"
+},tink.io.java.UndertowSource@fcd355)
+src/tink/http/containers/UndertowContainer.hx:88: Undertow Exchange Done
+src/tink/http/containers/UndertowContainer.hx:90: Converting exchange
+src/tink/http/containers/UndertowContainer.hx:91: HttpServerExchange{ POST /data}
+src/tink/http/containers/UndertowContainer.hx:97: req: tink.http.IncomingRequest@1cadaed
+src/Test.hx:27: requestSource: tink.io.java.UndertowSource@3353fb
