@@ -37,7 +37,7 @@ class Root {
     @:post("/payload") // want to parse an arbitrary data structure?
     @:consumes("application/json") // you can register other mime-type parsers/serializers
     public function payload(body:{name:String, age:Int, job:String}) {
-        return '${body.name} is a ${body.age} year old ${job}';
+        return '${body.name} is a ${body.age} year old ${body.job}';
     }
     @:post("/stream-to-disk") // want to stream binary streams over the web? Go ahead!
 	public function stream_to_disk(body:tink.io.Source.RealSource) {
