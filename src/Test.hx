@@ -28,7 +28,6 @@ class Root {
         body.pipeTo(stdSink).handle(() -> {
             var text = stdOutput.getBytes().toString();
             sys.io.File.saveContent("./request-streamed.out", text);
-            trace('Request: $text, ${(body:Dynamic).index}');
         });
         return "Streaming request to disk. :) Enjoy your response while we continue processing in the background.";
     }

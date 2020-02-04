@@ -35,6 +35,7 @@ class TinkHttpHandler implements io.undertow.server.HttpHandler {
 			var undertowHandler = UndertowContainer.toUndertowHandler(this.handler);
 			exchange.dispatch(io.undertow.util.SameThreadExecutor.INSTANCE, new Runnable(() -> {
 				undertowHandler(exchange).handle(() -> {
+					trace('End exchange.');
 					exchange.endExchange();
 				});
 			}));
@@ -59,7 +60,7 @@ class UndertowContainer implements Container {
 
 	static public function incomingRequestFromExchange(exchange:HttpServerExchange) {
 		var body = function(exchange:HttpServerExchange) return Plain(tink.io.java.UndertowSource.wrap("incoming undertow request",
-			cast exchange.getRequestReceiver(), () -> trace('Undertow request done')));
+			cast exchange.getRequestReceiver(), () -> {}));
 		var b = body(exchange);
 		var req = new IncomingRequest(exchange.getSourceAddress().toString(),
 			new IncomingRequestHeader(cast exchange.getRequestMethod().toString(), exchange.getRequestURL(), exchange.getProtocol().toString(), [
