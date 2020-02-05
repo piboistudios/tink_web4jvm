@@ -4,6 +4,7 @@
 -lib tink_io
 -lib tink_http
 -lib tink_web
+-lib tink_xml
 -java-lib ./undertow/lib/jboss-logging-3.4.0.Final.jar
 -java-lib ./undertow/lib/xnio-api-3.3.8.Final.jar
 -java-lib ./undertow/lib/xnio-nio-3.3.8.Final.jar

@@ -57,3 +57,106 @@ class Root {
     }
 } 
 ```
+
+
+# Latest Addition
+ - XML Parsing:
+    ```haxe
+    typedef CXMLCredential = {
+        @:tag("Credential") var credential:{
+
+            @:attr("domain") var domain:String;
+            @:tag("Identity") var identity:String;
+            @:optional @:tag("SharedSecret") var sharedSecret:String;
+        };
+    }
+    typedef CXMLHeader = {
+        @:tag("To") var to:CXMLCredential;
+        @:tag("Sender") var sender:CXMLCredential;
+        @:tag("From") var from:CXMLCredential;   
+    }
+    typedef CXMLProfileRequest = {
+        @:attr var payloadID:String;
+        @:attr("xml:lang") var lang:String;
+        @:attr var timestamp:String;
+        @:tag("Header") var header:CXMLHeader;
+        @:tag("Request") var request: {
+            @:tag("ProfileRequest") var request:String;
+        };
+    }
+
+    class CXML() {
+        public function new() {}
+         @:post("/cxml/profile-request") // parse complex arbitrary XML
+        // this particular complex anonymous structure models a ProfileRequest
+        // see: http://xml.CXml.org/current/cXMLReferenceGuide.pdf
+        @:consumes("application/xml") 
+        @:produces("application/json")
+        public function profileRequest(body:CXMLProfileRequest) {
+            return haxe.Json.stringify(body);
+        }
+
+    }
+    ```
+
+    Example payload:
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE cXML SYSTEM "http://xml.cXML.org/schemas/cXML/1.2.014/cXML.dtd">
+    <cXML payloadID="456778-199@acme.com" xml:lang="en-US" timestamp="2001-03-12T18:39:09-08:00">
+        <Header>
+            <From>
+                <Credential domain="OSN">
+                    <Identity>TEST</Identity>
+                </Credential>
+            </From>
+            <To>
+                <Credential domain="DUNS">
+                    <Identity>1111111111</Identity>
+                </Credential>
+            </To>
+            <Sender>
+                <Credential domain="OSN">
+                    <Identity>TEST</Identity>
+                    <SharedSecret>VERY SECRET, MUCH UNGUESSABLE</SharedSecret>
+                </Credential>
+                <UserAgent>Oracle Fusion Self Service Procurement</UserAgent>
+            </Sender>
+        </Header>
+       <Request>
+          <ProfileRequest />
+       </Request>
+    </cXML>
+    ```
+    Response:
+    ```json
+    {
+        "lang": "en-US",
+        "header": {
+            "from": {
+                "credential": {
+                    "domain": "OSN",
+                    "identity": "TEST"
+                }
+            },
+            "sender": {
+                "credential": {
+                    "domain": "OSN",
+                    "identity": "TEST",
+                    "sharedSecret": "VERY SECRET, MUCH UNGUESSABLE"
+                }
+            },
+            "to": {
+                "credential": {
+                    "domain": "DUNS",
+                    "identity": "1111111111"
+                }
+            }
+        },
+        "timestamp": "2001-03-12T18:39:09-08:00",
+        "request": {
+            "request": ""
+        },
+        "payloadID": "456778-199@acme.com"
+    }
+    ```
