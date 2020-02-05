@@ -161,3 +161,18 @@ class Root {
         "payloadID": "456778-199@acme.com"
     }
     ```
+    @:get("/long-running-response") // need to run a long-running task before you can respond? Don't wait!
+    public function long_running_response() {
+        return tink.core.Future.async(cb -> {
+            haxe.Timer.delay(() -> {
+                cb("This is the response after one second has elapsed.");
+            }, 1000);
+        });
+    }
+	@:get('/')
+	@:get('/hello/$name') // basics
+	public function hello(name = 'World')
+		return 'Hello, $name!';
+}
+
+```
