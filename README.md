@@ -73,7 +73,7 @@ class Root {
 
 
 # Latest Addition
- - XML Parsing:
+ - XML Parsing with [tink_xml](https://github.com/haxetink/tink_xml):
     ```haxe
     typedef CXMLCredential = {
         @:tag("Credential") var credential:{
