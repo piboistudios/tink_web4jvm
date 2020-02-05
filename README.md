@@ -98,7 +98,7 @@ class Root {
         };
     }
 
-    class CXML() {
+    class CXML {
         public function new() {}
          @:post("/cxml/profile-request") // parse complex arbitrary XML
         // this particular complex anonymous structure models a ProfileRequest
