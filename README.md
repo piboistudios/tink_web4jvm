@@ -68,6 +68,7 @@ class Root {
 	@:get('/hello/$name') // basics
 	public function hello(name = 'World')
 		return 'Hello, $name!';
+<<<<<<< HEAD
 } 
 ```
 
@@ -185,6 +186,8 @@ class Root {
 	@:get('/hello/$name') // basics
 	public function hello(name = 'World')
 		return 'Hello, $name!';
+=======
+>>>>>>> refs/remotes/origin/master
 }
 
 ```
