@@ -56,6 +56,7 @@ class Root {
         sys.io.File.saveContent("./request-buffered.out", text);
         return "Data buffered and written to disk; this happened synchronously, so the data was written to disk before this response was sent";
     }
+<<<<<<< HEAD
 } 
 ```
 
@@ -161,6 +162,8 @@ class Root {
         "payloadID": "456778-199@acme.com"
     }
     ```
+=======
+>>>>>>> fd3d27d9a1bb18831f197ca4d0988770d3f053c9
     @:get("/long-running-response") // need to run a long-running task before you can respond? Don't wait!
     public function long_running_response() {
         return tink.core.Future.async(cb -> {
