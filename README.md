@@ -82,6 +82,7 @@ class Root {
             @:tag("Identity") var identity:String;
             @:optional @:tag("SharedSecret") var sharedSecret:String;
         };
+        @:optional @:tag("UserAgent") var userAgent:String;
     }
     typedef CXMLHeader = {
         @:tag("To") var to:CXMLCredential;
@@ -157,7 +158,8 @@ class Root {
                     "domain": "OSN",
                     "identity": "TEST",
                     "sharedSecret": "VERY SECRET, MUCH UNGUESSABLE"
-                }
+                },
+                "userAgent": "Oracle Fusion Self Service Procurement"
             },
             "to": {
                 "credential": {

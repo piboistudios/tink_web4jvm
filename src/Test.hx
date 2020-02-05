@@ -20,6 +20,7 @@ typedef CXMLCredential = {
         @:tag("Identity") var identity:String;
         @:optional @:tag("SharedSecret") var sharedSecret:String;
     };
+    @:optional @:tag("UserAgent") var userAgent:String;
 }
 typedef CXMLHeader = {
     @:tag("To") var to:CXMLCredential;
